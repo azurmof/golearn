@@ -7,6 +7,7 @@ package linear_models
 import "C"
 import "fmt"
 import "unsafe"
+import "math"
 
 type Problem struct {
 	c_prob C.struct_problem
@@ -64,6 +65,9 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 }
 
 func Train(prob *Problem, param *Parameter) *Model {
+	if !validateInputData(prob) {
+		panic("Invalid input data: found NaN or Inf values.")
+	}
 	libLinearHookPrintFunc() // Sets up logging
 
 	tmpCProb := C.struct_problem{
@@ -75,6 +79,7 @@ func Train(prob *Problem, param *Parameter) *Model {
 	}
 
 	// Allocate memory on the C side
+	fmt.Println("Allocating memory for c_prob and c_param")
 	c_prob := (*C.struct_problem)(C.malloc(C.size_t(unsafe.Sizeof(tmpCProb))))
 	c_param := (*C.struct_parameter)(C.malloc(C.size_t(unsafe.Sizeof(param.c_param))))
 
@@ -82,10 +87,17 @@ func Train(prob *Problem, param *Parameter) *Model {
 	*c_prob = tmpCProb
 	*c_param = param.c_param
 
+	// Add fmt print statement before the C function call
+	fmt.Println("Before calling C.train")
+
 	// Call the C function with the C pointers
 	modelPtr := C.train(c_prob, c_param)
 
+	// Add fmt print statement after the C function call
+	fmt.Println("After calling C.train")
+
 	// Free the allocated memory on the C side
+	fmt.Println("Freeing memory for c_prob and c_param")
 	C.free(unsafe.Pointer(c_prob))
 	C.free(unsafe.Pointer(c_param))
 
@@ -179,4 +191,26 @@ func convert_features(X [][]float64, bias float64) **C.struct_feature_node {
 	}
 	c_x = &x[0]
 	return c_x
+}
+
+func isValidNumber(x float64) bool {
+	return !math.IsNaN(x) && !math.IsInf(x, 0)
+}
+
+func validateInputData(prob *Problem) bool {
+	for i := 0; i < len(prob.Y); i++ {
+		if !isValidNumber(prob.Y[i]) {
+			return false
+		}
+	}
+
+	for _, x := range prob.X {
+		for j := 0; j < len(x); j++ {
+			if !isValidNumber(float64(x[j].Index)) || !isValidNumber(x[j].Value) {
+				return false
+			}
+		}
+	}
+
+	return true
 }
