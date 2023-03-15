@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/azurmof/golearn/base"
+	"unsafe"
 )
 
 type LogisticRegression struct {

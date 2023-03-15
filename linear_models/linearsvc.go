@@ -11,6 +11,7 @@ import (
 	"github.com/azurmof/golearn/base"
 	"io/ioutil"
 	"os"
+	"unsafe"
 )
 
 // LinearSVCParams represnts all available LinearSVC options.
