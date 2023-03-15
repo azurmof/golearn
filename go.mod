@@ -10,3 +10,5 @@ require (
 	github.com/smartystreets/goconvey v1.6.4
 	gonum.org/v1/gonum v0.8.1
 )
+
+replace github.com/sjwhitworth/golearn => github.com/azurmof/golearn latest
