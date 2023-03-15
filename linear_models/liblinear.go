@@ -61,21 +61,13 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 
 func Train(prob *Problem, param *Parameter) *Model {
 	libLinearHookPrintFunc() // Sets up logging
-
 	tmpCProb := C.struct_problem{
 		l:    C.int(prob.c_prob.l),
 		n:    C.int(prob.c_prob.n),
 		y:    (*C.double)(unsafe.Pointer(prob.c_prob.y)),
-		x:    nil,
+		x:    (**C.struct_feature_node)(unsafe.Pointer(&prob.c_prob.x[0])),
 		bias: C.double(prob.c_prob.bias),
 	}
-
-	// Allocate memory for x using C malloc
-	tmpCProb.x = (**C.struct_feature_node)(C.malloc(C.size_t(C.sizeof_struct_feature_node * uintptr(tmpCProb.l))))
-	for i := 0; i < int(tmpCProb.l); i++ {
-		tmpCProb.x[i] = (*C.struct_feature_node)(unsafe.Pointer(prob.c_prob.x[i]))
-	}
-
 	tmpCParam := C.struct_parameter{
 		solver_type:  C.int(param.c_param.solver_type),
 		eps:          C.double(param.c_param.eps),
@@ -84,13 +76,7 @@ func Train(prob *Problem, param *Parameter) *Model {
 		weight_label: (*C.int)(unsafe.Pointer(param.c_param.weight_label)),
 		weight:       (*C.double)(unsafe.Pointer(param.c_param.weight)),
 	}
-
-	model := &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
-
-	// Free allocated memory
-	C.free(unsafe.Pointer(tmpCProb.x))
-
-	return model
+	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
 }
 
 func Export(model *Model, filePath string) error {
