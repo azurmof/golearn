@@ -69,8 +69,8 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	for i := 0; i < len(X); i++ {
 		prob.X[i] = make([]C.struct_feature_node, len(X[i])+1) // +1 for the bias
 		for j := 0; j < len(X[i]); j++ {
-			prob.X[i][j].index = C.int(j + 1)
-			prob.X[i][j].value = C.double(X[i][j])
+			prob.X[i][j].Index = C.int(j + 1)
+			prob.X[i][j].Value = C.double(X[i][j])
 		}
 		// Add the bias
 		prob.X[i][len(X[i])].index = C.int(-1)
@@ -222,7 +222,7 @@ func validateInputData(prob *Problem) bool {
 
 	for _, x := range prob.X {
 		for j := 0; j < len(x); j++ {
-			if !isValidNumber(float64(x[j].Index)) || !isValidNumber(x[j].Value) {
+			if !isValidNumber(float64(x[j].Index)) || !isValidNumber(float64(x[j].Value)) {
 				return false
 			}
 		}
