@@ -2,6 +2,7 @@ package linear_models
 
 /*
 #include "linear.h"
+#include <stdlib.h>
 */
 import "C"
 import "fmt"
