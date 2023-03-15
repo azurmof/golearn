@@ -61,18 +61,18 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 func Train(prob *Problem, param *Parameter) *Model {
 	libLinearHookPrintFunc() // Sets up logging
 	tmpCProb := C.struct_problem{
-		l:    C.int32_t(prob.c_prob.l),
-		n:    C.int32_t(prob.c_prob.n),
+		l:    C.int(prob.c_prob.l),
+		n:    C.int(prob.c_prob.n),
 		y:    (*C.double)(unsafe.Pointer(prob.c_prob.y)),
 		x:    (**C.struct_feature_node)(unsafe.Pointer(prob.c_prob.x)),
 		bias: C.double(prob.c_prob.bias),
 	}
 	tmpCParam := C.struct_parameter{
-		solver_type:  C.int32_t(param.c_param.solver_type),
+		solver_type:  C.int(param.c_param.solver_type),
 		eps:          C.double(param.c_param.eps),
 		C:            C.double(param.c_param.C),
-		nr_weight:    C.int32_t(param.c_param.nr_weight),
-		weight_label: (*C.int32_t)(unsafe.Pointer(param.c_param.weight_label)),
+		nr_weight:    C.int(param.c_param.nr_weight),
+		weight_label: (*C.int)(unsafe.Pointer(param.c_param.weight_label)),
 		weight:       (*C.double)(unsafe.Pointer(param.c_param.weight)),
 	}
 	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
