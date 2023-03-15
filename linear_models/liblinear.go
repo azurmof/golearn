@@ -81,6 +81,12 @@ func Train(prob *Problem, param *Parameter) *Model {
 		weight:       param.cWeight,      // Use the C pointer
 	}
 
+	fmt.Printf("tmpCProb: %+v\n", tmpCProb)                    // Add this line
+	fmt.Printf("tmpCParam: %+v\n", tmpCParam)                  // Add this line
+	fmt.Printf("param: %+v\n", param)                          // Add this line
+	fmt.Printf("param.cWeightLabel: %p\n", param.cWeightLabel) // Add this line
+	fmt.Printf("param.cWeight: %p\n", param.cWeight)           // Add this line
+
 	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
 }
 
