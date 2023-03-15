@@ -81,6 +81,9 @@ func Train(prob *Problem, param *Parameter, weightClasses []C.int, weightVec []f
 	fmt.Printf("Length of WeightLabel: %v\n", len(weightClasses))
 	fmt.Printf("Length of Weight: %v\n", len(weightVec))
 	fmt.Printf("Value of nr_weight: %v\n", int(param.c_param.nr_weight))
+	fmt.Printf("param.c_param.nr_weight: %v\n", int(param.c_param.nr_weight))
+	fmt.Printf("len(param.WeightLabel): %v\n", len(param.WeightLabel))
+	fmt.Printf("len(param.Weight): %v\n", len(param.Weight))
 
 	if len(param.WeightLabel) != int(param.c_param.nr_weight) || len(param.Weight) != int(param.c_param.nr_weight) {
 		panic("The lengths of WeightLabel and Weight must match the value of nr_weight")
