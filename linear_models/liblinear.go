@@ -74,33 +74,22 @@ func Train(prob *Problem, param *Parameter) *Model {
 		bias: C.double(prob.c_prob.bias),
 	}
 
-	// Create C arrays from Go slices
-	cWeightLabel := (*C.int)(C.malloc(C.size_t(len(param.WeightLabel)) * C.size_t(unsafe.Sizeof(C.int(0)))))
-	param.cWeightLabel = cWeightLabel
-	defer C.free(unsafe.Pointer(cWeightLabel))
+	// Allocate memory on the C side
+	c_prob := (*C.struct_problem)(C.malloc(C.size_t(unsafe.Sizeof(tmpCProb))))
+	c_param := (*C.struct_parameter)(C.malloc(C.size_t(unsafe.Sizeof(tmpCParam))))
 
-	for i, v := range param.WeightLabel {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
-	}
+	// Copy the content of Go pointers to the newly allocated C memory
+	*c_prob = tmpCProb
+	*c_param = tmpCParam
 
-	cWeight := (*C.double)(C.malloc(C.size_t(len(param.Weight)) * C.size_t(unsafe.Sizeof(C.double(0)))))
-	param.cWeight = cWeight
-	defer C.free(unsafe.Pointer(cWeight))
+	// Call the C function with the C pointers
+	modelPtr := C.train(c_prob, c_param)
 
-	for i, v := range param.Weight {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
-	}
+	// Free the allocated memory on the C side
+	C.free(unsafe.Pointer(c_prob))
+	C.free(unsafe.Pointer(c_param))
 
-	tmpCParam := C.struct_parameter{
-		solver_type:  C.int(param.c_param.solver_type),
-		eps:          C.double(param.c_param.eps),
-		C:            C.double(param.c_param.C),
-		nr_weight:    C.int(len(param.WeightLabel)),
-		weight_label: cWeightLabel,
-		weight:       cWeight,
-	}
-
-	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
+	return &Model{unsafe.Pointer(modelPtr)}
 }
 
 func Export(model *Model, filePath string) error {
