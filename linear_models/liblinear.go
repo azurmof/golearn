@@ -14,8 +14,6 @@ type Problem struct {
 
 type Parameter struct {
 	c_param      C.struct_parameter
-	WeightLabel  []int32
-	Weight       []float64
 	cWeightLabel *C.int
 	cWeight      *C.double
 }

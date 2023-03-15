@@ -38,9 +38,6 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	lr.problem = NewProblem(problemVec, labelVec, 0)
 
 	weightClasses := make([]int32, len(lr.param.WeightLabel))
-	for i, v := range lr.param.WeightLabel {
-		weightClasses[i] = int32(v)
-	}
 
 	// Allocate memory for cWeightLabel and cWeight using C.malloc
 	lr.param.cWeightLabel = (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
