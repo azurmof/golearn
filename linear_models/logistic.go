@@ -1,6 +1,7 @@
 package linear_models
 
 import (
+	"C"
 	"errors"
 	"fmt"
 	"github.com/azurmof/golearn/base"
@@ -38,7 +39,7 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 		weightClasses[i] = C.int(v)
 	}
 
-	lr.model = Train(prob, lr.param, weightClasses, lr.param.Weight)
+	lr.model = Train(lr.prob, lr.param, weightClasses, lr.param.Weight)
 	return nil
 }
 
