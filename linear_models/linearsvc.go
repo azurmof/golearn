@@ -150,7 +150,7 @@ func NewLinearSVCFromParams(params *LinearSVCParams) (*LinearSVC, error) {
 func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 
 	var weightVec []float64
-	var weightClasses []C.int
+	var weightClasses []int32
 
 	// Creates the class weighting
 	if lr.Param.ClassWeights == nil {
@@ -163,7 +163,7 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 		weightVec = lr.Param.ClassWeights
 	}
 
-	weightClasses = make([]C.int, len(weightVec))
+	weightClasses = make([]int32, len(weightVec))
 	for i := range weightVec {
 		weightClasses[i] = C.int(i)
 	}

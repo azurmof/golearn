@@ -34,9 +34,9 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	labelVec := convertInstancesToLabelVec(X)
 	lr.problem = NewProblem(problemVec, labelVec, 0)
 
-	weightClasses := make([]C.int, len(lr.param.WeightLabel))
+	weightClasses := make([]int32, len(lr.param.WeightLabel))
 	for i, v := range lr.param.WeightLabel {
-		weightClasses[i] = C.int(v)
+		weightClasses[i] = int32(v)
 	}
 
 	lr.model = Train(lr.problem, lr.param, weightClasses, lr.param.Weight)
