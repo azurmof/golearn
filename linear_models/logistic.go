@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/azurmof/golearn/base"
+	"strconv"
 	"unsafe"
 )
 
@@ -44,7 +45,11 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	idx := 0
 	for classLabel, _ := range weightClasses {
 		weightVec[idx] = 1.0
-		classLabels[idx] = int32(classLabel)
+		intClassLabel, err := strconv.Atoi(classLabel)
+		if err != nil {
+			return err
+		}
+		classLabels[idx] = int32(intClassLabel)
 		idx++
 	}
 
@@ -55,13 +60,13 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	lr.param.cWeight = (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(lr.param.cWeight))
 
-	// Copy the values from weightClasses and weightVec to cWeightLabel and cWeight
-	for i, v := range weightClasses {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
+	// Copy the values from classLabels and weightVec to cWeightLabel and cWeight
+	for idx, v := range classLabels {
+		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeightLabel)) + uintptr(idx)*unsafe.Sizeof(C.int(0)))) = C.int(v)
 	}
 
-	for i, v := range weightVec {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
+	for idx, v := range weightVec {
+		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeight)) + uintptr(idx)*unsafe.Sizeof(C.double(0)))) = C.double(v)
 	}
 
 	// Train
