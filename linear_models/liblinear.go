@@ -70,18 +70,18 @@ func Train(prob *Problem, param *Parameter) *Model {
 		bias: C.double(prob.c_prob.bias),
 	}
 
-	cWeightLabel := (*C.int)(C.malloc(C.size_t(len(param.c_param.weight_label)) * C.size_t(unsafe.Sizeof(C.int(0)))))
+	cWeightLabel := (*C.int)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.int(0)))))
 	defer C.free(unsafe.Pointer(cWeightLabel))
 
-	cWeight := (*C.double)(C.malloc(C.size_t(len(param.c_param.weight)) * C.size_t(unsafe.Sizeof(C.double(0)))))
+	cWeight := (*C.double)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(cWeight))
 
-	for i, val := range param.c_param.weight_label {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(val)
+	for i := 0; i < int(param.c_param.nr_weight); i++ {
+		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = param.c_param.weight_label[i]
 	}
 
-	for i, val := range param.c_param.weight {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(val)
+	for i := 0; i < int(param.c_param.nr_weight); i++ {
+		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = param.c_param.weight[i]
 	}
 
 	tmpCParam := C.struct_parameter{
