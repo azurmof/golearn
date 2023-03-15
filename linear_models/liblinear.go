@@ -65,7 +65,7 @@ func Train(prob *Problem, param *Parameter) *Model {
 		l:    C.int(prob.c_prob.l),
 		n:    C.int(prob.c_prob.n),
 		y:    (*C.double)(unsafe.Pointer(prob.c_prob.y)),
-		x:    (**C.struct_feature_node)(unsafe.Pointer(&prob.c_prob.x[0])),
+		x:    prob.c_prob.x,
 		bias: C.double(prob.c_prob.bias),
 	}
 	tmpCParam := C.struct_parameter{
