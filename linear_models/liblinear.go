@@ -61,7 +61,7 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	return &prob
 }
 
-func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []float64) *Model {
+func Train(prob *Problem, param *Parameter, weightClasses []C.int, weightVec []float64) *Model {
 	libLinearHookPrintFunc() // Sets up logging
 
 	tmpCProb := C.struct_problem{
