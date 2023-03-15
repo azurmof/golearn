@@ -61,7 +61,7 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	return &prob
 }
 
-func Train(prob *Problem, param *Parameter, weightClasses []C.int, weightVec []float64) *Model {
+func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []float64) *Model {
 	libLinearHookPrintFunc() // Sets up logging
 
 	tmpCProb := C.struct_problem{
@@ -78,22 +78,15 @@ func Train(prob *Problem, param *Parameter, weightClasses []C.int, weightVec []f
 	cWeight := (*C.double)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(cWeight))
 
-	fmt.Printf("Length of WeightLabel: %v\n", len(weightClasses))
-	fmt.Printf("Length of Weight: %v\n", len(weightVec))
-	fmt.Printf("Value of nr_weight: %v\n", int(param.c_param.nr_weight))
-	fmt.Printf("param.c_param.nr_weight: %v\n", int(param.c_param.nr_weight))
-	fmt.Printf("len(param.WeightLabel): %v\n", len(param.WeightLabel))
-	fmt.Printf("len(param.Weight): %v\n", len(param.Weight))
-
-	if len(param.WeightLabel) != int(param.c_param.nr_weight) || len(param.Weight) != int(param.c_param.nr_weight) {
-		panic("The lengths of WeightLabel and Weight must match the value of nr_weight")
+	// Convert weightClasses to C array
+	cWeightClasses := make([]C.int, len(weightClasses))
+	for i, v := range weightClasses {
+		cWeightClasses[i] = C.int(v)
 	}
 
 	for i := 0; i < int(param.c_param.nr_weight); i++ {
 		index := uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0))
-		if i < len(param.WeightLabel) {
-			*(*C.int)(unsafe.Pointer(index)) = C.int(param.WeightLabel[i])
-		}
+		*(*C.int)(unsafe.Pointer(index)) = cWeightClasses[i]
 		fmt.Printf("cWeightLabel[%d]: %d\n", i, *(*C.int)(unsafe.Pointer(index)))
 	}
 
