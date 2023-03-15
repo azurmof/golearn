@@ -187,7 +187,7 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 	lr.param.Weight = weightVec
 
 	// Train
-	lr.model = Train(prob, lr.param, weightClasses, weightVec) // Pass weightClasses and weightVec to Train
+	lr.model = Train(prob, lr.param)
 	return nil
 }
 

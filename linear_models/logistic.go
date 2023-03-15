@@ -39,7 +39,7 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 		weightClasses[i] = int32(v)
 	}
 
-	lr.model = Train(lr.problem, lr.param, weightClasses, lr.param.Weight)
+	lr.model = Train(lr.problem, lr.param)
 	return nil
 }
 

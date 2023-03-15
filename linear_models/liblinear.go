@@ -61,7 +61,7 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	return &prob
 }
 
-func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []float64) *Model {
+func Train(prob *Problem, param *Parameter) *Model {
 	libLinearHookPrintFunc() // Sets up logging
 
 	tmpCProb := C.struct_problem{
@@ -72,29 +72,13 @@ func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []f
 		bias: C.double(prob.c_prob.bias),
 	}
 
-	// Allocate memory for cWeightLabel and cWeight using C.malloc
-	cWeightLabel := (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
-	defer C.free(unsafe.Pointer(cWeightLabel))
-
-	cWeight := (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
-	defer C.free(unsafe.Pointer(cWeight))
-
-	// Copy the values from weightClasses and weightVec to cWeightLabel and cWeight
-	for i, v := range weightClasses {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
-	}
-
-	for i, v := range weightVec {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
-	}
-
 	tmpCParam := C.struct_parameter{
 		solver_type:  C.int(param.c_param.solver_type),
 		eps:          C.double(param.c_param.eps),
 		C:            C.double(param.c_param.C),
 		nr_weight:    C.int(param.c_param.nr_weight),
-		weight_label: cWeightLabel,
-		weight:       cWeight,
+		weight_label: (*C.int)(unsafe.Pointer(&param.WeightLabel[0])),
+		weight:       (*C.double)(unsafe.Pointer(&param.Weight[0])),
 	}
 
 	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
