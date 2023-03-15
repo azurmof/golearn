@@ -37,21 +37,25 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	labelVec := convertInstancesToLabelVec(X)
 	lr.problem = NewProblem(problemVec, labelVec, 0)
 
-	weightClasses := make([]int32, len(lr.param.WeightLabel))
+	weightVec := lr.param.Weight
+	weightClasses := make([]int32, len(weightVec))
+	for i := range weightVec {
+		weightClasses[i] = int32(i)
+	}
 
 	// Allocate memory for cWeightLabel and cWeight using C.malloc
 	lr.param.cWeightLabel = (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
 	defer C.free(unsafe.Pointer(lr.param.cWeightLabel))
 
-	lr.param.cWeight = (*C.double)(C.malloc(C.size_t(len(lr.param.Weight)) * C.size_t(unsafe.Sizeof(C.double(0)))))
+	lr.param.cWeight = (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(lr.param.cWeight))
 
-	// Copy the values from weightClasses and lr.param.Weight to cWeightLabel and cWeight
+	// Copy the values from weightClasses and weightVec to cWeightLabel and cWeight
 	for i, v := range weightClasses {
 		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
 	}
 
-	for i, v := range lr.param.Weight {
+	for i, v := range weightVec {
 		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
 	}
 
