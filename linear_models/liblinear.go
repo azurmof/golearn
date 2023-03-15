@@ -77,11 +77,13 @@ func Train(prob *Problem, param *Parameter) *Model {
 	defer C.free(unsafe.Pointer(cWeight))
 
 	for i := 0; i < int(param.c_param.nr_weight); i++ {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(param.c_param.weight_label[i])
+		index := uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0))
+		*(*C.int)(unsafe.Pointer(index)) = C.int(param.c_param.weight_label[i])
 	}
 
 	for i := 0; i < int(param.c_param.nr_weight); i++ {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(param.c_param.weight[i])
+		index := uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0))
+		*(*C.double)(unsafe.Pointer(index)) = C.double(param.c_param.weight[i])
 	}
 
 	tmpCParam := C.struct_parameter{
