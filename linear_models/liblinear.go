@@ -72,12 +72,8 @@ func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []f
 		bias: C.double(prob.c_prob.bias),
 	}
 
-	cWeightLabel := (*C.int)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.int(0)))))
-	defer C.free(unsafe.Pointer(cWeightLabel))
-
-	cWeight := (*C.double)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.double(0)))))
-	defer C.free(unsafe.Pointer(cWeight))
-
+	cWeightLabel := (*C.int)(unsafe.Pointer(&weightClasses[0]))
+	cWeight := (*C.double)(unsafe.Pointer(&weightVec[0]))
 	// Convert weightClasses to C array
 	cWeightClasses := make([]C.int, len(weightClasses))
 	for i, v := range weightClasses {
