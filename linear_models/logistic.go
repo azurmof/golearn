@@ -4,7 +4,6 @@ package linear_models
 import "C"
 
 import (
-	"errors"
 	"fmt"
 	"github.com/azurmof/golearn/base"
 	"strconv"

@@ -75,13 +75,21 @@ func Train(prob *Problem, param *Parameter) *Model {
 	}
 
 	// Create C arrays from Go slices
-	cWeightLabel := (*C.int)(unsafe.Pointer(C.CBytes(param.WeightLabel)))
+	cWeightLabel := (*C.int)(C.malloc(C.size_t(len(param.WeightLabel)) * C.size_t(unsafe.Sizeof(C.int(0)))))
 	param.cWeightLabel = cWeightLabel
 	defer C.free(unsafe.Pointer(cWeightLabel))
 
-	cWeight := (*C.double)(unsafe.Pointer(C.CBytes(param.Weight)))
+	for i, v := range param.WeightLabel {
+		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
+	}
+
+	cWeight := (*C.double)(C.malloc(C.size_t(len(param.Weight)) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	param.cWeight = cWeight
 	defer C.free(unsafe.Pointer(cWeight))
+
+	for i, v := range param.Weight {
+		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
+	}
 
 	tmpCParam := C.struct_parameter{
 		solver_type:  C.int(param.c_param.solver_type),
