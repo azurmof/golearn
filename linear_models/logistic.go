@@ -37,10 +37,10 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	labelVec := convertInstancesToLabelVec(X)
 	lr.problem = NewProblem(problemVec, labelVec, 0)
 
-	weightVec := lr.param.Weight
-	weightClasses := make([]int32, len(weightVec))
+	weightClasses := base.GetClassDistribution(X)
+	weightVec := make([]float64, len(weightClasses))
 	for i := range weightVec {
-		weightClasses[i] = int32(i)
+		weightVec[i] = 1.0
 	}
 
 	// Allocate memory for cWeightLabel and cWeight using C.malloc
