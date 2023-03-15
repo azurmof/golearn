@@ -7,8 +7,9 @@ import (
 )
 
 type LogisticRegression struct {
-	param *Parameter
-	model *Model
+	param   *Parameter
+	model   *Model
+	problem *Problem
 }
 
 func NewLogisticRegression(penalty string, C float64, eps float64) (*LogisticRegression, error) {

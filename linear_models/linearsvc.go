@@ -163,9 +163,9 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 		weightVec = lr.Param.ClassWeights
 	}
 
-	weightClasses = make([]int32, len(weightVec))
+	weightClasses = make([]C.int, len(weightVec))
 	for i := range weightVec {
-		weightClasses[i] = int32(i)
+		weightClasses[i] = C.int(i)
 	}
 
 	// Convert the problem
