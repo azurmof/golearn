@@ -87,11 +87,13 @@ func Train(prob *Problem, param *Parameter) *Model {
 		if i < len(param.WeightLabel) {
 			*(*C.int)(unsafe.Pointer(index)) = C.int(param.WeightLabel[i])
 		}
+		fmt.Printf("cWeightLabel[%d]: %d\n", i, *(*C.int)(unsafe.Pointer(index)))
 	}
 
 	for i := 0; i < int(param.c_param.nr_weight); i++ {
 		index := uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0))
 		*(*C.double)(unsafe.Pointer(index)) = C.double(param.Weight[i])
+		fmt.Printf("cWeight[%d]: %f\n", i, *(*C.double)(unsafe.Pointer(index)))
 	}
 
 	tmpCParam := C.struct_parameter{
