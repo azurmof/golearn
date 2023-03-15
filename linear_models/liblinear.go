@@ -61,7 +61,7 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	return &prob
 }
 
-func Train(prob *Problem, param *Parameter) *Model {
+func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []float64) *Model {
 	libLinearHookPrintFunc() // Sets up logging
 
 	tmpCProb := C.struct_problem{
@@ -78,8 +78,8 @@ func Train(prob *Problem, param *Parameter) *Model {
 	cWeight := (*C.double)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(cWeight))
 
-	fmt.Printf("Length of WeightLabel: %v\n", len(param.WeightLabel))
-	fmt.Printf("Length of Weight: %v\n", len(param.Weight))
+	fmt.Printf("Length of WeightLabel: %v\n", len(weightClasses))
+	fmt.Printf("Length of Weight: %v\n", len(weightVec))
 	fmt.Printf("Value of nr_weight: %v\n", int(param.c_param.nr_weight))
 
 	if len(param.WeightLabel) != int(param.c_param.nr_weight) || len(param.Weight) != int(param.c_param.nr_weight) {
