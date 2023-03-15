@@ -78,6 +78,10 @@ func Train(prob *Problem, param *Parameter) *Model {
 	cWeight := (*C.double)(C.malloc(C.size_t(param.c_param.nr_weight) * C.size_t(unsafe.Sizeof(C.double(0)))))
 	defer C.free(unsafe.Pointer(cWeight))
 
+	if len(param.WeightLabel) != int(param.c_param.nr_weight) || len(param.Weight) != int(param.c_param.nr_weight) {
+		panic("The lengths of WeightLabel and Weight must match the value of nr_weight")
+	}
+
 	for i := 0; i < int(param.c_param.nr_weight); i++ {
 		index := uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0))
 		if i < len(param.WeightLabel) {
