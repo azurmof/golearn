@@ -1,5 +1,8 @@
 package linear_models
 
+/*
+#include <stdlib.h>
+*/
 import "C"
 
 import (
