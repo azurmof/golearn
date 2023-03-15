@@ -184,7 +184,13 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 	lr.param.c_param.weight_label = &(weightClasses[0])
 	lr.param.c_param.weight = (*C.double)(unsafe.Pointer(&weightVec[0]))
 
-	//	lr.param.weights = (*C.double)unsafe.Pointer(&(weightVec[0]));
+	// Update param.WeightLabel and param.Weight before calling Train
+	lr.param.WeightLabel = make([]int32, len(weightClasses))
+	for i, class := range weightClasses {
+		lr.param.WeightLabel[i] = int32(class)
+	}
+	lr.param.Weight = weightVec
+	// Train
 	lr.model = Train(prob, lr.param, weightClasses, weightVec)
 	return nil
 }
