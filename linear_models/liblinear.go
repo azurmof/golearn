@@ -11,6 +11,8 @@ import "math"
 
 type Problem struct {
 	c_prob C.struct_problem
+	Y      []float64
+	X      [][]C.struct_feature_node
 }
 
 type Parameter struct {
@@ -60,6 +62,20 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	}
 	prob.c_prob.y = &c_y[0]
 	prob.c_prob.bias = C.double(-1)
+
+	// Set the Y and X fields of the Problem struct
+	prob.Y = y
+	prob.X = make([][]C.struct_feature_node, len(X))
+	for i := 0; i < len(X); i++ {
+		prob.X[i] = make([]C.struct_feature_node, len(X[i])+1) // +1 for the bias
+		for j := 0; j < len(X[i]); j++ {
+			prob.X[i][j].index = C.int(j + 1)
+			prob.X[i][j].value = C.double(X[i][j])
+		}
+		// Add the bias
+		prob.X[i][len(X[i])].index = C.int(-1)
+		prob.X[i][len(X[i])].value = C.double(bias)
+	}
 
 	return &prob
 }
