@@ -17,22 +17,6 @@ type LogisticRegression struct {
 	problem *Problem
 }
 
-func NewLogisticRegression(penalty string, C float64, eps float64) (*LogisticRegression, error) {
-	solver_type := 0
-	if penalty == "l2" {
-		solver_type = L2R_LR
-	} else if penalty == "l1" {
-		solver_type = L1R_LR
-	} else {
-		return nil, errors.New(fmt.Sprintf("Invalid penalty '%s'", penalty))
-	}
-
-	lr := LogisticRegression{}
-	lr.param = NewParameter(solver_type, C, eps)
-	lr.model = nil
-	return &lr, nil
-}
-
 func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 	problemVec := convertInstancesToProblemVec(X)
 	labelVec := convertInstancesToLabelVec(X)
@@ -55,15 +39,6 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 
 	lr.param.WeightLabel = classLabels
 	lr.param.Weight = weightVec
-
-	// Copy the values from classLabels and weightVec to cWeightLabel and cWeight
-	for idx, v := range classLabels {
-		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeightLabel)) + uintptr(idx)*unsafe.Sizeof(C.int(0)))) = C.int(v)
-	}
-
-	for idx, v := range weightVec {
-		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeight)) + uintptr(idx)*unsafe.Sizeof(C.double(0)))) = C.double(v)
-	}
 
 	// Train
 	lr.model = Train(lr.problem, lr.param)

@@ -13,9 +13,11 @@ type Problem struct {
 }
 
 type Parameter struct {
-	c_param     C.struct_parameter
-	WeightLabel []int32
-	Weight      []float64
+	c_param      C.struct_parameter
+	WeightLabel  []int32
+	Weight       []float64
+	cWeightLabel *C.int
+	cWeight      *C.double
 }
 
 type Model struct {
@@ -74,16 +76,18 @@ func Train(prob *Problem, param *Parameter) *Model {
 
 	// Create C arrays from Go slices
 	cWeightLabel := (*C.int)(unsafe.Pointer(C.CBytes(param.WeightLabel)))
+	param.cWeightLabel = cWeightLabel
 	defer C.free(unsafe.Pointer(cWeightLabel))
 
 	cWeight := (*C.double)(unsafe.Pointer(C.CBytes(param.Weight)))
+	param.cWeight = cWeight
 	defer C.free(unsafe.Pointer(cWeight))
 
 	tmpCParam := C.struct_parameter{
 		solver_type:  C.int(param.c_param.solver_type),
 		eps:          C.double(param.c_param.eps),
 		C:            C.double(param.c_param.C),
-		nr_weight:    C.int(param.c_param.nr_weight),
+		nr_weight:    C.int(len(param.WeightLabel)),
 		weight_label: cWeightLabel,
 		weight:       cWeight,
 	}
