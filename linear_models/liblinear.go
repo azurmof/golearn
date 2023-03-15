@@ -76,11 +76,11 @@ func Train(prob *Problem, param *Parameter) *Model {
 
 	// Allocate memory on the C side
 	c_prob := (*C.struct_problem)(C.malloc(C.size_t(unsafe.Sizeof(tmpCProb))))
-	c_param := (*C.struct_parameter)(C.malloc(C.size_t(unsafe.Sizeof(tmpCParam))))
+	c_param := (*C.struct_parameter)(C.malloc(C.size_t(unsafe.Sizeof(param.c_param))))
 
 	// Copy the content of Go pointers to the newly allocated C memory
 	*c_prob = tmpCProb
-	*c_param = tmpCParam
+	*c_param = param.c_param
 
 	// Call the C function with the C pointers
 	modelPtr := C.train(c_prob, c_param)
