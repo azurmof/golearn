@@ -25,6 +25,8 @@ type Parameter struct {
 
 type Model struct {
 	c_model unsafe.Pointer
+	c_prob  unsafe.Pointer
+	c_param unsafe.Pointer
 }
 
 const (
@@ -80,6 +82,12 @@ func NewProblem(X [][]float64, y []float64, bias float64) *Problem {
 	return &prob
 }
 
+func (m *Model) Free() {
+	C.free(unsafe.Pointer(m.c_prob))
+	C.free(unsafe.Pointer(m.c_param))
+	// ... free other resources related to the model ...
+}
+
 func Train(prob *Problem, param *Parameter) *Model {
 	if !validateInputData(prob) {
 		panic("Invalid input data: found NaN or Inf values.")
@@ -117,7 +125,11 @@ func Train(prob *Problem, param *Parameter) *Model {
 	C.free(unsafe.Pointer(c_prob))
 	C.free(unsafe.Pointer(c_param))
 
-	return &Model{unsafe.Pointer(modelPtr)}
+	return &Model{
+		c_model: unsafe.Pointer(modelPtr),
+		c_prob:  unsafe.Pointer(c_prob),
+		c_param: unsafe.Pointer(c_param),
+	}
 }
 
 func Export(model *Model, filePath string) error {

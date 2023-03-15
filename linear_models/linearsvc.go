@@ -187,6 +187,7 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 
 	// Train
 	lr.model = Train(prob, lr.param)
+	lr.model.Free()
 	return nil
 }
 
