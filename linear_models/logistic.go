@@ -1,10 +1,9 @@
 package linear_models
 
-/*
-#include <stdlib.h>
-*/
+// #include <stdlib.h>
+import "C"
+
 import (
-	"C"
 	"errors"
 	"fmt"
 	"github.com/azurmof/golearn/base"
