@@ -13,9 +13,9 @@ type Problem struct {
 }
 
 type Parameter struct {
-	c_param      C.struct_parameter
-	cWeightLabel *C.int
-	cWeight      *C.double
+	c_param     C.struct_parameter
+	WeightLabel []int32
+	Weight      []float64
 }
 
 type Model struct {
@@ -72,20 +72,21 @@ func Train(prob *Problem, param *Parameter) *Model {
 		bias: C.double(prob.c_prob.bias),
 	}
 
+	// Create C arrays from Go slices
+	cWeightLabel := (*C.int)(C.CBytes(param.WeightLabel))
+	defer C.free(unsafe.Pointer(cWeightLabel))
+
+	cWeight := (*C.double)(C.CBytes(param.Weight))
+	defer C.free(unsafe.Pointer(cWeight))
+
 	tmpCParam := C.struct_parameter{
 		solver_type:  C.int(param.c_param.solver_type),
 		eps:          C.double(param.c_param.eps),
 		C:            C.double(param.c_param.C),
 		nr_weight:    C.int(param.c_param.nr_weight),
-		weight_label: param.cWeightLabel, // Use the C pointer
-		weight:       param.cWeight,      // Use the C pointer
+		weight_label: cWeightLabel,
+		weight:       cWeight,
 	}
-
-	fmt.Printf("tmpCProb: %+v\n", tmpCProb)                    // Add this line
-	fmt.Printf("tmpCParam: %+v\n", tmpCParam)                  // Add this line
-	fmt.Printf("param: %+v\n", param)                          // Add this line
-	fmt.Printf("param.cWeightLabel: %p\n", param.cWeightLabel) // Add this line
-	fmt.Printf("param.cWeight: %p\n", param.cWeight)           // Add this line
 
 	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
 }

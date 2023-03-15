@@ -53,12 +53,8 @@ func (lr *LogisticRegression) Fit(X base.FixedDataGrid) error {
 		idx++
 	}
 
-	// Allocate memory for cWeightLabel and cWeight using C.malloc
-	lr.param.cWeightLabel = (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
-	defer C.free(unsafe.Pointer(lr.param.cWeightLabel))
-
-	lr.param.cWeight = (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
-	defer C.free(unsafe.Pointer(lr.param.cWeight))
+	lr.param.WeightLabel = classLabels
+	lr.param.Weight = weightVec
 
 	// Copy the values from classLabels and weightVec to cWeightLabel and cWeight
 	for idx, v := range classLabels {
