@@ -167,6 +167,22 @@ func (lr *LinearSVC) Fit(X base.FixedDataGrid) error {
 		weightClasses[i] = int32(i)
 	}
 
+	// Allocate memory for cWeightLabel and cWeight using C.malloc
+	lr.param.cWeightLabel = (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
+	defer C.free(unsafe.Pointer(lr.param.cWeightLabel))
+
+	lr.param.cWeight = (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
+	defer C.free(unsafe.Pointer(lr.param.cWeight))
+
+	// Copy the values from weightClasses and weightVec to cWeightLabel and cWeight
+	for i, v := range weightClasses {
+		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
+	}
+
+	for i, v := range weightVec {
+		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(lr.param.cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
+	}
+
 	// Convert the problem
 	problemVec := convertInstancesToProblemVec(X)
 	labelVec := convertInstancesToLabelVec(X)

@@ -13,9 +13,11 @@ type Problem struct {
 }
 
 type Parameter struct {
-	c_param     C.struct_parameter
-	WeightLabel []int32
-	Weight      []float64
+	c_param      C.struct_parameter
+	WeightLabel  []int32
+	Weight       []float64
+	cWeightLabel *C.int
+	cWeight      *C.double
 }
 
 type Model struct {
@@ -77,8 +79,8 @@ func Train(prob *Problem, param *Parameter) *Model {
 		eps:          C.double(param.c_param.eps),
 		C:            C.double(param.c_param.C),
 		nr_weight:    C.int(param.c_param.nr_weight),
-		weight_label: (*C.int)(unsafe.Pointer(&param.WeightLabel[0])),
-		weight:       (*C.double)(unsafe.Pointer(&param.Weight[0])),
+		weight_label: param.cWeightLabel, // Use the C pointer
+		weight:       param.cWeight,      // Use the C pointer
 	}
 
 	return &Model{unsafe.Pointer(C.train(&tmpCProb, &tmpCParam))}
