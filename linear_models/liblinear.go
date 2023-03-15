@@ -72,24 +72,20 @@ func Train(prob *Problem, param *Parameter, weightClasses []int32, weightVec []f
 		bias: C.double(prob.c_prob.bias),
 	}
 
-	cWeightLabel := (*C.int)(unsafe.Pointer(&weightClasses[0]))
-	cWeight := (*C.double)(unsafe.Pointer(&weightVec[0]))
-	// Convert weightClasses to C array
-	cWeightClasses := make([]C.int, len(weightClasses))
+	// Allocate memory for cWeightLabel and cWeight using C.malloc
+	cWeightLabel := (*C.int)(C.malloc(C.size_t(len(weightClasses)) * C.size_t(unsafe.Sizeof(C.int(0)))))
+	defer C.free(unsafe.Pointer(cWeightLabel))
+
+	cWeight := (*C.double)(C.malloc(C.size_t(len(weightVec)) * C.size_t(unsafe.Sizeof(C.double(0)))))
+	defer C.free(unsafe.Pointer(cWeight))
+
+	// Copy the values from weightClasses and weightVec to cWeightLabel and cWeight
 	for i, v := range weightClasses {
-		cWeightClasses[i] = C.int(v)
+		*(*C.int)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0)))) = C.int(v)
 	}
 
-	for i := 0; i < int(param.c_param.nr_weight); i++ {
-		index := uintptr(unsafe.Pointer(cWeightLabel)) + uintptr(i)*unsafe.Sizeof(C.int(0))
-		*(*C.int)(unsafe.Pointer(index)) = cWeightClasses[i]
-		fmt.Printf("cWeightLabel[%d]: %d\n", i, *(*C.int)(unsafe.Pointer(index)))
-	}
-
-	for i := 0; i < int(param.c_param.nr_weight); i++ {
-		index := uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0))
-		*(*C.double)(unsafe.Pointer(index)) = C.double(param.Weight[i])
-		fmt.Printf("cWeight[%d]: %f\n", i, *(*C.double)(unsafe.Pointer(index)))
+	for i, v := range weightVec {
+		*(*C.double)(unsafe.Pointer(uintptr(unsafe.Pointer(cWeight)) + uintptr(i)*unsafe.Sizeof(C.double(0)))) = C.double(v)
 	}
 
 	tmpCParam := C.struct_parameter{
