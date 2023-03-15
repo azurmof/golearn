@@ -1,8 +1,8 @@
 package naive
 
 import (
-	"github.com/sjwhitworth/golearn/base"
-	"github.com/sjwhitworth/golearn/filters"
+	"github.com/azurmof/golearn/base"
+	"github.com/azurmof/golearn/filters"
 	. "github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"os"

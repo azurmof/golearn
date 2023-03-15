@@ -1,9 +1,9 @@
 package ensemble
 
 import (
-	"github.com/sjwhitworth/golearn/base"
-	"github.com/sjwhitworth/golearn/linear_models"
-	"github.com/sjwhitworth/golearn/meta"
+	"github.com/azurmof/golearn/base"
+	"github.com/azurmof/golearn/linear_models"
+	"github.com/azurmof/golearn/meta"
 
 	"fmt"
 )

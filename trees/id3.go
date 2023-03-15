@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/sjwhitworth/golearn/base"
-	"github.com/sjwhitworth/golearn/evaluation"
+	"github.com/azurmof/golearn/base"
+	"github.com/azurmof/golearn/evaluation"
 )
 
 // NodeType determines whether a DecisionTreeNode is a leaf or not.

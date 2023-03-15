@@ -7,11 +7,11 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/azurmof/golearn/base"
+	"github.com/azurmof/golearn/kdtree"
+	"github.com/azurmof/golearn/metrics/pairwise"
+	"github.com/azurmof/golearn/utilities"
 	"github.com/gonum/matrix"
-	"github.com/sjwhitworth/golearn/base"
-	"github.com/sjwhitworth/golearn/kdtree"
-	"github.com/sjwhitworth/golearn/metrics/pairwise"
-	"github.com/sjwhitworth/golearn/utilities"
 	"gonum.org/v1/gonum/mat"
 )
 

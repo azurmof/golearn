@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"fmt"
-	"github.com/sjwhitworth/golearn/base"
+	"github.com/azurmof/golearn/base"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

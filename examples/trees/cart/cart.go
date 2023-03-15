@@ -5,8 +5,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/sjwhitworth/golearn/base"
-	"github.com/sjwhitworth/golearn/trees"
+	"github.com/azurmof/golearn/base"
+	"github.com/azurmof/golearn/trees"
 )
 
 func main() {
